@@ -6,6 +6,7 @@ using Services;
 using Services.Impls;
 using Signals;
 using UnityEngine;
+using UnityEngine.UI;
 using Views;
 using Zenject;
 
@@ -22,6 +23,7 @@ namespace Installers
         [SerializeField] private DestroyedObstacle destroyedObstacle;
         [SerializeField] private GameObject door;
         [Header("Other")]
+        [SerializeField] private Image flashImage;
         [SerializeField] private Transform scriptsTransform;
 
         public override void InstallBindings()
@@ -82,6 +84,7 @@ namespace Installers
             Container.Bind<Camera>().FromInstance(mainCamera).AsSingle().NonLazy();
             Container.Bind<PlayerBall>().FromInstance(playerBall).AsSingle().NonLazy();
             Container.Bind<GameObject>().FromInstance(door).AsSingle().NonLazy();
+            Container.Bind<Image>().FromInstance(flashImage).AsSingle().NonLazy();
         }
 
         private void BindControllers()
@@ -93,7 +96,7 @@ namespace Installers
         private void BindServices()
         {
             Container.Bind<IObstaclesService>().To<ObstaclesService>().FromNewComponentOn(scriptsTransform.gameObject).AsSingle().NonLazy();
-            Container.Bind<IAnimationService>().To<AnimationService>().FromNewComponentOn(scriptsTransform.gameObject).AsSingle().NonLazy();
+            Container.Bind<IAnimationsService>().To<AnimationsService>().FromNewComponentOn(scriptsTransform.gameObject).AsSingle().NonLazy();
         }
     }
 }

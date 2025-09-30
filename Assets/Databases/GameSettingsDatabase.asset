@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gameSettingVo:
     PlayerBallScaleLimit: 0
-    BallsHeight: -0.3
+    BallsHeight: 2.5
     PlayerPositionAtStart: {x: 0, y: 2.5, z: -17}
     PlayerScaleAtStart: {x: 4, y: 4, z: 4}
     DoorStartPosition: {x: 0, y: 1.5, z: 18.8}

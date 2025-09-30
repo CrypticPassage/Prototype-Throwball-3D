@@ -16,9 +16,9 @@ namespace Controllers.Impls
         private PlayerBall _playerBall;
         private GameObject _door;
         private Camera _mainCamera;
-        
+
         private IObstaclesService _obstaclesService;
-        private IAnimationService _animationService;
+        private IAnimationsService _animationsService;
         
         private Vector3 _playerBallPosition;
         private Vector3 _throwBallPosition;
@@ -31,7 +31,7 @@ namespace Controllers.Impls
         private bool _isBallThrown;
         private bool _isKeyPressed;
         private bool _isFirstKey = true;
-
+        
         [Inject]
         public void Construct(SignalBus signalBus,
             IGameSettingsDatabase gameSettingsDatabase,
@@ -39,7 +39,7 @@ namespace Controllers.Impls
             GameObject door,
             Camera mainCamera,
             IObstaclesService obstaclesService,
-            IAnimationService animationService)
+            IAnimationsService animationsService)
         {
             _signalBus = signalBus;
             _gameSettingVo = gameSettingsDatabase.GameSettingVo;
@@ -47,16 +47,17 @@ namespace Controllers.Impls
             _playerBall = playerBall;
             _mainCamera = mainCamera;
             _obstaclesService = obstaclesService;
-            _animationService = animationService;
+            _animationsService = animationsService;
         }
 
         public void OnGameStart()
         {
             _playerBall.gameObject.transform.localPosition = _gameSettingVo.PlayerPositionAtStart;
             _playerBall.gameObject.transform.localScale = _gameSettingVo.PlayerScaleAtStart;
-            _door.gameObject.transform.SetLocalPositionAndRotation(_gameSettingVo.DoorStartPosition, Quaternion.Euler(_gameSettingVo.DoorStartRotation));
-            _mainCamera.gameObject.transform.SetPositionAndRotation(_gameSettingVo.CameraGamePosition, Quaternion.Euler(_gameSettingVo.CameraGameRotation));
-            _obstaclesService.GetObstacles(100);
+            //_door.gameObject.transform.SetLocalPositionAndRotation(_gameSettingVo.DoorStartPosition, Quaternion.Euler(_gameSettingVo.DoorStartRotation));
+           // _mainCamera.gameObject.transform.SetPositionAndRotation(_gameSettingVo.CameraGamePosition, Quaternion.Euler(_gameSettingVo.CameraGameRotation));
+            // _obstaclesService.GetObstacles(100);
+            _animationsService.StartGameAnimation(_mainCamera, _gameSettingVo);
             
             _isKeyPressed = false;
             _isFirstKey = true;
@@ -65,7 +66,7 @@ namespace Controllers.Impls
 
         public void OnGameOver(SignalGameOver gameOverSignal)
         {
-            _animationService.KillSequence();
+            _animationsService.KillSequence();
             _isGameOn = false;
             _isAnimationOn = false;
             _isFirstKey = true;
@@ -96,8 +97,7 @@ namespace Controllers.Impls
         {
             if (_isGameOn)
             {
-                CheckInput();
-                // SetBallsHeight();
+                CheckInput(); 
                 CheckPlayerBallSize();
                 CheckThrownBall();
             }
@@ -108,15 +108,7 @@ namespace Controllers.Impls
             _isGameOn = false;
             _isBallThrown = false;
             _isAnimationOn = true;
-            _animationService.StartEndGameAnimation();
-        }
-
-        private void SetBallsHeight()
-        {
-            _playerBallPosition.y = _gameSettingVo.BallsHeight;
-            _playerBall.gameObject.transform.position = _playerBallPosition;
-                
-            _throwBallPosition.y = _gameSettingVo.BallsHeight;
+            _animationsService.StartEndGameAnimation();
         }
         
         private void CheckPlayerBallSize()
@@ -145,7 +137,7 @@ namespace Controllers.Impls
             else
             {
                 _throwBallPosition = _playerBallPosition;
-                _throwBallPosition.z += 1;
+                _throwBallPosition.z -= 5;
                 _playerBall.ThrowableBall.gameObject.transform.position = _throwBallPosition;
 
                 if (!_isKeyPressed)
@@ -171,10 +163,10 @@ namespace Controllers.Impls
                         _throwBallScale.z += Time.deltaTime;
                         _playerBall.ThrowableBall.gameObject.transform.localScale = _throwBallScale;
 
-                        _playerBallScale.x -= Time.deltaTime;
-                        _playerBallScale.y -= Time.deltaTime;
-                        _playerBallScale.z -= Time.deltaTime;
-                        _playerBall.gameObject.transform.localScale = _playerBallScale;
+                        _playerBallScale.x -= Time.deltaTime * 0.002f;
+                        _playerBallScale.y -= Time.deltaTime * 0.002f;
+                        _playerBallScale.z -= Time.deltaTime * 0.002f;
+                        _playerBall.gameObject.transform.localScale += _playerBallScale;
                     }
 
                     if (_playerBall.ThrowableBall.gameObject.transform.localScale != new Vector3(0, 0, 0))
