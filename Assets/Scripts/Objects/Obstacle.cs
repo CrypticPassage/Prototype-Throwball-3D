@@ -4,5 +4,6 @@ namespace Objects
 {
     public class Obstacle : MonoBehaviour
     {
+        
     }
 }

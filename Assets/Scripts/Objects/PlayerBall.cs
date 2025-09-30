@@ -6,17 +6,16 @@ namespace Objects
 {
     public class PlayerBall : MonoBehaviour
     {
+        [SerializeField] private ThrowableBall throwableBall;
+        
         private SignalBus _signalBus;
-        private ThrowBall _throwBall;
 
-        public ThrowBall ThrowBall => _throwBall;
+        public ThrowableBall ThrowableBall => throwableBall;
         
         [Inject] 
-        public void Construct(SignalBus signalBus,
-            ThrowBall throwBall)
+        public void Construct(SignalBus signalBus)
         {
             _signalBus = signalBus;
-            _throwBall = throwBall;
         }
 
         private void OnCollisionEnter(Collision collision)

@@ -1,9 +1,11 @@
-﻿namespace Services
+﻿using UnityEngine;
+
+namespace Services
 {
     public interface IAnimationService
     {
         void KillSequence();
-        void SetStartAnimationData();
+        void SetStartAnimationData(Vector3 position);
         void StartEndGameAnimation();
     }
 }

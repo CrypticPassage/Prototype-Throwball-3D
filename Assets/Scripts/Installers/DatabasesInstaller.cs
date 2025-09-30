@@ -8,11 +8,11 @@ namespace Installers
     [CreateAssetMenu(menuName = "Installers/DatabasesInstaller", fileName = "DatabasesInstaller")]
     public class DatabasesInstaller : ScriptableObjectInstaller
     { 
-        [SerializeField] private LevelSettingsDatabase levelSettingsDatabase;
+        [SerializeField] private GameSettingsDatabase gameSettingsDatabase;
 
         public override void InstallBindings()
         {
-            Container.Bind<ILevelSettingsDatabase>().FromInstance(levelSettingsDatabase).AsSingle();
+            Container.Bind<IGameSettingsDatabase>().FromInstance(gameSettingsDatabase).AsSingle();
         }
     }
 }

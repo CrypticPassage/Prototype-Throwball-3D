@@ -6,7 +6,7 @@ using Zenject;
 
 namespace Objects
 {
-    public class ThrowBall : MonoBehaviour
+    public class ThrowableBall : MonoBehaviour
     {
         private SignalBus _signalBus;
         private IObstaclesService _obstaclesService;

@@ -12,5 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b1701dbe1434e2987dc25cc094aa1c7, type: 3}
   m_Name: DatabasesInstaller
   m_EditorClassIdentifier: 
-  levelSettingsDatabase: {fileID: 11400000, guid: c47baac73497ae043a63aa1759f0a882, type: 2}
   gameSettingsDatabase: {fileID: 11400000, guid: 954e1ce1b6558f849866d75807082160, type: 2}

@@ -10,17 +10,15 @@ namespace Services.Impls
     {
         private SignalBus _signalBus;
         private PlayerBall _playerBall;
-        private Door _door;
+        private GameObject _door;
         private Sequence _sequence;
-
-        private Vector3 _doorStartPosition = new Vector3(0, 0, 14);
         
         private bool _isDoorMoved = true;
         
         [Inject]
         public void Construct(SignalBus signalBus, 
             PlayerBall playerBall,
-            Door door)
+            GameObject door)
         {
             _signalBus = signalBus;
             _playerBall = playerBall;
@@ -29,9 +27,9 @@ namespace Services.Impls
 
         public void KillSequence() => _sequence?.Kill(); 
 
-        public void SetStartAnimationData()
+        public void SetStartAnimationData(Vector3 position)
         {
-            _door.gameObject.transform.position = _doorStartPosition;
+            _door.gameObject.transform.position = position;
             _isDoorMoved = true;
         }
 

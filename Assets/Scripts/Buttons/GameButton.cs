@@ -29,7 +29,7 @@ namespace Buttons
             _signalBus.Fire(new SignalButtonHeld(true));
             
             _playerBallScale = _playerBall.gameObject.transform.localScale;
-            _throwBallScale = _playerBall.ThrowBall.gameObject.transform.localScale;
+            _throwBallScale = _playerBall.ThrowableBall.gameObject.transform.localScale;
             _isButtonHeld = true;
         }
 
@@ -48,7 +48,7 @@ namespace Buttons
         private void PerformContinuousAction()
         {
             _playerBall.gameObject.transform.localScale = _playerBallScale;
-            _playerBall.ThrowBall.gameObject.transform.localScale = _throwBallScale;
+            _playerBall.ThrowableBall.gameObject.transform.localScale = _throwBallScale;
         }
     }
 }

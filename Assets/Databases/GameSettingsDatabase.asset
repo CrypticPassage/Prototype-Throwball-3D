@@ -9,6 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a5d62482a3b84c5bb72e557d54539c90, type: 3}
+  m_Script: {fileID: 11500000, guid: 8cc014bb69d859146bbc253e21a0d6db, type: 3}
   m_Name: GameSettingsDatabase
   m_EditorClassIdentifier: 
+  _gameSettingVo:
+    PlayerBallScaleLimit: 0
+    BallsHeight: -0.3
+    PlayerPositionAtStart: {x: 0, y: 2.5, z: -17}
+    PlayerScaleAtStart: {x: 4, y: 4, z: 4}
+    DoorStartPosition: {x: 0, y: 1.5, z: 18.8}
+    DoorStartRotation: {x: 0, y: 90, z: 0}
+    CameraGamePosition: {x: 5, y: 14, z: -16}
+    CameraGameRotation: {x: 35, y: -17, z: 0}
