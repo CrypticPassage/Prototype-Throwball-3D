@@ -3,6 +3,7 @@ using Databases;
 using Models;
 using Objects;
 using Services;
+using Services.Impls;
 using Signals;
 using UnityEngine;
 using Zenject;
@@ -18,6 +19,7 @@ namespace Controllers.Impls
         private GameObject _door;
         private Camera _mainCamera;
 
+        private IInputService _inputService;
         private IObstaclesService _obstaclesService;
         private IAnimationsService _animationsService;
 
@@ -28,7 +30,6 @@ namespace Controllers.Impls
         private Vector3 _throwBallDirection;
 
         private bool _isGameOn;
-        private bool _isBallThrown;
         private bool _isKeyPressed;
 
         [Inject]
@@ -37,6 +38,7 @@ namespace Controllers.Impls
             PlayerBall playerBall,
             GameObject door,
             Camera mainCamera,
+            IInputService inputService,
             IObstaclesService obstaclesService,
             IAnimationsService animationsService)
         {
@@ -45,14 +47,17 @@ namespace Controllers.Impls
             _door = door;
             _playerBall = playerBall;
             _mainCamera = mainCamera;
+            _inputService = inputService;
             _obstaclesService = obstaclesService;
             _animationsService = animationsService;
         }
 
         public void OnGameStart()
         {
+            _playerBall.Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
             _playerBall.gameObject.transform.localPosition = _gameSettingVo.PlayerPositionAtStart;
             _playerBall.gameObject.transform.localScale = _gameSettingVo.PlayerScaleAtStart;
+            _playerBall.ThrowableBall.gameObject.SetActive(true);
             _door.gameObject.transform.SetLocalPositionAndRotation(_gameSettingVo.DoorStartPosition,
                 Quaternion.Euler(_gameSettingVo.DoorStartRotation));
             _animationsService.StartGameAnimation(_mainCamera, _gameSettingVo);
@@ -91,7 +96,7 @@ namespace Controllers.Impls
                 }
                 
                 _obstaclesService.StartDestroyingObstacles(obstaclesToDestroy);
-                _isBallThrown = false;
+                _playerBall.ThrowableBall.IsBallThrown = false;
             }
         }
 
@@ -114,7 +119,9 @@ namespace Controllers.Impls
         private void StartEndGameAnimation()
         {
             _isGameOn = false;
-            _isBallThrown = false;
+            _playerBall.ThrowableBall.IsBallThrown = false;
+            _playerBall.Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+            _playerBall.ThrowableBall.gameObject.SetActive(false);
             _animationsService.StartEndGameAnimation();
         }
 
@@ -129,11 +136,11 @@ namespace Controllers.Impls
 
         private void CheckThrownBall()
         {
-            if (_isBallThrown)
+            if (_playerBall.ThrowableBall.IsBallThrown)
             {
                 if (Vector3.Distance(_playerBallPosition, _throwBallPosition) > _gameSettingVo.ThrowableBallMaxDistance)
                 {
-                    _isBallThrown = false;
+                    _playerBall.ThrowableBall.IsBallThrown = false;
                     return;
                 }
 
@@ -157,10 +164,10 @@ namespace Controllers.Impls
 
         private void CheckInput()
         {
-            if (!_isGameOn || _isBallThrown)
+            if (!_isGameOn || _playerBall.ThrowableBall.IsBallThrown)
                 return;
 
-            if (Input.GetKey(KeyCode.Mouse0))
+            if (_inputService.IsClickHeld())
             {
                 _isKeyPressed = true;
 
@@ -177,14 +184,14 @@ namespace Controllers.Impls
 
             if (_playerBall.ThrowableBall.gameObject.transform.localScale != _gameSettingVo.MinThrowableBallScale)
             {
-                if (Input.GetKeyUp(KeyCode.Mouse0))
+                if (_inputService.IsClickUp())
                 {
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                     if (Physics.Raycast(ray, out RaycastHit hit))
                         _throwBallDirection = hit.point;
 
                     _isKeyPressed = false;
-                    _isBallThrown = true;
+                    _playerBall.ThrowableBall.IsBallThrown = true;
                 }
             }
         }

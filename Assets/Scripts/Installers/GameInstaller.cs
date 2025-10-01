@@ -19,6 +19,7 @@ namespace Installers
         [Header("Objects")] 
         [SerializeField] private Camera mainCamera;
         [SerializeField] private PlayerBall playerBall;
+        [SerializeField] private FlyingObject flyingObject;
         [SerializeField] private Obstacle obstacle;
         [SerializeField] private GameObject door;
         [Header("Other")]
@@ -77,6 +78,7 @@ namespace Installers
         {
             Container.Bind<Camera>().FromInstance(mainCamera).AsSingle().NonLazy();
             Container.Bind<PlayerBall>().FromInstance(playerBall).AsSingle().NonLazy();
+            Container.Bind<FlyingObject>().FromInstance(flyingObject).AsSingle().NonLazy();
             Container.Bind<GameObject>().FromInstance(door).AsSingle().NonLazy();
             Container.Bind<Image>().FromInstance(flashImage).AsSingle().NonLazy();
         }
@@ -89,6 +91,7 @@ namespace Installers
 
         private void BindServices()
         {
+            Container.Bind<IInputService>().To<InputService>().FromNewComponentOn(scriptsTransform.gameObject).AsSingle().NonLazy();
             Container.Bind<IObstaclesService>().To<ObstaclesService>().FromNewComponentOn(scriptsTransform.gameObject).AsSingle().NonLazy();
             Container.Bind<IAnimationsService>().To<AnimationsService>().FromNewComponentOn(scriptsTransform.gameObject).AsSingle().NonLazy();
         }

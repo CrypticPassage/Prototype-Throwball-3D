@@ -8,6 +8,14 @@ namespace Objects
     {
         private SignalBus _signalBus;
 
+        private bool _isBallThrown;
+
+        public bool IsBallThrown
+        {
+            get => _isBallThrown;
+            set => _isBallThrown = value;
+        }
+
         [Inject] 
         public void Construct(SignalBus signalBus)
         {

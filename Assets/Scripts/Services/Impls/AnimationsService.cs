@@ -13,6 +13,7 @@ namespace Services.Impls
         private SignalBus _signalBus;
         private Image _flashImage;
         private PlayerBall _playerBall;
+        private FlyingObject _flyingObject;
         private GameObject _door;
         private Sequence _sequence;
         
@@ -22,11 +23,13 @@ namespace Services.Impls
         public void Construct(SignalBus signalBus, 
             Image flashImage,
             PlayerBall playerBall,
+            FlyingObject flyingObject,
             GameObject door)
         {
             _signalBus = signalBus;
             _flashImage = flashImage;
             _playerBall = playerBall;
+            _flyingObject = flyingObject;
             _door = door;
         }
 
@@ -58,6 +61,11 @@ namespace Services.Impls
             _sequence.Play();
         }
 
+        private void Start()
+        {
+            StartFlyingObjectAnimation();
+        }
+
         private void Update()
         {
             if (!_isDoorMoved)
@@ -72,6 +80,20 @@ namespace Services.Impls
                     _isDoorMoved = true;
                 }
             }
+        }
+
+        private void StartFlyingObjectAnimation()
+        {
+            var startPosition = new Vector3(_flyingObject.transform.position.x, 6f, _flyingObject.transform.position.z);
+            var endPosition = new Vector3(_flyingObject.transform.position.x, 8f, _flyingObject.transform.position.z);
+            
+            var sequence = DOTween.Sequence();
+            
+            sequence.Append(_flyingObject.transform.DOMoveY(endPosition.y, 4f).SetEase(Ease.Linear));
+            sequence.Append(_flyingObject.transform.DOMoveY(startPosition.y, 4f).SetEase(Ease.Linear));
+            sequence.SetLoops(-1, LoopType.Yoyo);
+            
+            sequence.Play();
         }
     }
 }
