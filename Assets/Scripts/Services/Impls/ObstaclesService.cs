@@ -13,6 +13,9 @@ using Random = UnityEngine.Random;
 
 namespace Services.Impls
 {
+    /// <summary>
+    /// Даний сервіс відповідає за роботу пула перешкод та предоставляє методи роботи з ним.
+    /// </summary>
     public class ObstaclesService : MonoBehaviour, IObstaclesService
     {
         private PoolBase<Obstacle> _obstaclesPool;

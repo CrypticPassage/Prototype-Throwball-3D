@@ -9,6 +9,9 @@ using Zenject;
 
 namespace Services.Impls
 {
+    /// <summary>
+    /// Даний сервіс містить реалізовані анімації, що зустрічаються у грі, та методи їх відтворення.
+    /// </summary>
     public class AnimationsService : MonoBehaviour, IAnimationsService
     {
         private SignalBus _signalBus;

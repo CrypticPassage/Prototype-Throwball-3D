@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace Databases.Impls
 { 
+    /// <summary>
+    /// Дана База Даних зберігає різноманітні конфігураційні значення гри.
+    /// Хардкод винесений в Дану Базу Даних.
+    /// </summary>
     [CreateAssetMenu(menuName = "Databases/GameSettingsDatabase", fileName = "GameSettingsDatabase")] 
     public class GameSettingsDatabase : ScriptableObject, IGameSettingsDatabase 
     { 

@@ -7,12 +7,16 @@ using Zenject;
 
 namespace Controllers.Impls
 {
+    /// <summary>
+    /// Даний контроллер відповідає за логіку ігрового меню (UI).
+    /// Контроллер приймає фаєри сигналів та виконує конкретну логіку під кожний сигнал.
+    /// </summary>
     public class MenuController : MonoBehaviour, IMenuController
     {
         private SignalBus _signalBus;
         
         private MenuView _menuView;
-
+        
         [Inject]
         public void Construct(SignalBus signalBus,
             MenuView menuView,
