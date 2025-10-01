@@ -68,7 +68,7 @@ namespace Controllers.Impls
             _playerBall.ThrowableBall.gameObject.SetActive(true);
             _door.gameObject.transform.SetLocalPositionAndRotation(_gameSettingVo.DoorStartPosition,
                 Quaternion.Euler(_gameSettingVo.DoorStartRotation));
-            _animationsService.StartGameAnimation(_mainCamera, _gameSettingVo);
+            _animationsService.StartEntryGameAnimation(_mainCamera, _gameSettingVo);
             _obstaclesService.DespawnAllObstacles();
             _obstaclesService.GetObstacles(_gameSettingVo.ObstaclesAmount);
 

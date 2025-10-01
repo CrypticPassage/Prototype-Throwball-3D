@@ -6,7 +6,7 @@ namespace Services
     public interface IAnimationsService
     {
         void KillSequence();
-        void StartGameAnimation(Camera camera, GameSettingVo gameSettingVo);
+        void StartEntryGameAnimation(Camera camera, GameSettingVo gameSettingVo);
         void StartTryGameAnimation();
     }
 }

@@ -4,7 +4,6 @@
     {
         MainMenu,
         BallThrow,
-        BallHit,
-        ObstacleDestroy
+        BallHit
     }
 }

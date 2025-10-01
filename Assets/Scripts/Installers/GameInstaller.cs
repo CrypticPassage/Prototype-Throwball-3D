@@ -28,7 +28,7 @@ namespace Installers
         [Header("Other")]
         [SerializeField] private Image flashImage;
         [SerializeField] private Transform scriptsTransform;
-
+        
         public override void InstallBindings()
         {
             SignalBusInstaller.Install(Container);

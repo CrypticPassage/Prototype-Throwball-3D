@@ -39,15 +39,15 @@ namespace Services.Impls
 
         public void KillSequence() => _sequence?.Kill();
 
-        public void StartGameAnimation(Camera camera, GameSettingVo gameSettingVo)
+        public void StartEntryGameAnimation(Camera camera, GameSettingVo gameSettingVo)
         {
             _sequence?.Kill();
             _sequence = DOTween.Sequence();
             _flashImage.gameObject.SetActive(true);
             
             _sequence.Join(_flashImage.DOFade(0f, 1f).OnComplete(() => _flashImage.gameObject.SetActive(false)));
-            _sequence.Join(camera.transform.DOMove(gameSettingVo.CameraGamePosition, 3f));
-            _sequence.Join(camera.transform.DORotateQuaternion(Quaternion.Euler(gameSettingVo.CameraGameRotation), 3f));
+            _sequence.Join(camera.transform.DOMove(gameSettingVo.CameraGamePosition, _gameSettingVo.BallRollAnimationDuration));
+            _sequence.Join(camera.transform.DORotateQuaternion(Quaternion.Euler(gameSettingVo.CameraGameRotation), _gameSettingVo.BallRollAnimationDuration));
             
             _sequence.Play();
         }
