@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using Databases;
+using DG.Tweening;
 using Models;
 using Objects;
 using Signals;
@@ -15,22 +16,25 @@ namespace Services.Impls
         private PlayerBall _playerBall;
         private FlyingObject _flyingObject;
         private GameObject _door;
+        private GameSettingVo _gameSettingVo;
         private Sequence _sequence;
         
         private bool _isDoorMoved = true;
-        
+
         [Inject]
-        public void Construct(SignalBus signalBus, 
+        public void Construct(SignalBus signalBus,
             Image flashImage,
             PlayerBall playerBall,
             FlyingObject flyingObject,
-            GameObject door)
+            GameObject door,
+            IGameSettingsDatabase gameSettingsDatabase)
         {
             _signalBus = signalBus;
             _flashImage = flashImage;
             _playerBall = playerBall;
             _flyingObject = flyingObject;
             _door = door;
+            _gameSettingVo = gameSettingsDatabase.GameSettingVo;
         }
 
         public void KillSequence() => _sequence?.Kill();
@@ -48,14 +52,15 @@ namespace Services.Impls
             _sequence.Play();
         }
         
-        public void StartEndGameAnimation()
+        public void StartTryGameAnimation()
         {
             _isDoorMoved = false;
             _sequence?.Kill();
             _sequence = DOTween.Sequence();
             
-            _sequence.Append(_playerBall.transform.DOMoveZ(28, 5).SetEase(Ease.Linear));
-            _sequence.Join(_playerBall.transform.DORotate(new Vector3(0, 360 * 5, 0), 5, RotateMode.FastBeyond360));
+            _sequence.Append(_playerBall.transform.DOMoveZ(_gameSettingVo.BallRollEndPositionZ, _gameSettingVo.BallRollAnimationDuration).SetEase(Ease.Linear));
+            _sequence.Join(_playerBall.transform.DORotate(new Vector3(0, 360 * _gameSettingVo.BallRollAnimationDuration, 0),
+                _gameSettingVo.BallRollAnimationDuration, RotateMode.FastBeyond360));
             _sequence.AppendCallback(() => _signalBus.Fire(new SignalGameOver(true)));
             
             _sequence.Play();
@@ -74,9 +79,9 @@ namespace Services.Impls
                 
                 float distanceToDoor = Vector3.Distance(_playerBall.transform.position, door.transform.position);
                 
-                if (distanceToDoor <= 25)
+                if (distanceToDoor <= _gameSettingVo.DistanceToDoor)
                 {
-                    door.transform.DORotateQuaternion(Quaternion.Euler(Vector3.zero), 3f);
+                    door.transform.DORotateQuaternion(Quaternion.Euler(Vector3.zero), _gameSettingVo.DoorAnimationDuration);
                     _isDoorMoved = true;
                 }
             }
@@ -84,13 +89,13 @@ namespace Services.Impls
 
         private void StartFlyingObjectAnimation()
         {
-            var startPosition = new Vector3(_flyingObject.transform.position.x, 6f, _flyingObject.transform.position.z);
-            var endPosition = new Vector3(_flyingObject.transform.position.x, 8f, _flyingObject.transform.position.z);
+            var startPosition = new Vector3(_flyingObject.transform.position.x, _gameSettingVo.FlyingObjectStartPositionY, _flyingObject.transform.position.z);
+            var endPosition = new Vector3(_flyingObject.transform.position.x, _gameSettingVo.FlyingObjectEndPositionY, _flyingObject.transform.position.z);
             
             var sequence = DOTween.Sequence();
             
-            sequence.Append(_flyingObject.transform.DOMoveY(endPosition.y, 4f).SetEase(Ease.Linear));
-            sequence.Append(_flyingObject.transform.DOMoveY(startPosition.y, 4f).SetEase(Ease.Linear));
+            sequence.Append(_flyingObject.transform.DOMoveY(endPosition.y, _gameSettingVo.FlyingObjectAnimationDuration).SetEase(Ease.Linear));
+            sequence.Append(_flyingObject.transform.DOMoveY(startPosition.y, _gameSettingVo.FlyingObjectAnimationDuration).SetEase(Ease.Linear));
             sequence.SetLoops(-1, LoopType.Yoyo);
             
             sequence.Play();

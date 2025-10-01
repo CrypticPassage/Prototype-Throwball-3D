@@ -22,6 +22,7 @@ namespace Installers
         [SerializeField] private PlayerBall playerBall;
         [SerializeField] private FlyingObject flyingObject;
         [SerializeField] private Obstacle obstacle;
+        [SerializeField] private RoadLine roadLine;
         [SerializeField] private GameObject door;
         [SerializeField] private AudioManager audioManager;
         [Header("Other")]
@@ -47,7 +48,7 @@ namespace Installers
             Container.DeclareSignal<SignalStartGame>();
             Container.DeclareSignal<SignalGameOver>();
             Container.DeclareSignal<SignalObjectsCollision>();
-            Container.DeclareSignal<SignalStartAnimation>();
+            Container.DeclareSignal<SignalStartTryAnimation>();
             Container.DeclareSignal<SignalButtonHeld>();
         }
 
@@ -57,8 +58,8 @@ namespace Installers
                 .ToMethod<IGameController>(x => x.OnGameStart).FromResolve();
             Container.BindSignal<SignalObjectsCollision>()
                 .ToMethod<IGameController>(x => x.OnObjectsCollision).FromResolve();
-            Container.BindSignal<SignalStartAnimation>()
-                .ToMethod<IGameController>(x => x.OnStartAnimation).FromResolve();
+            Container.BindSignal<SignalStartTryAnimation>()
+                .ToMethod<IGameController>(x => x.OnStartTryAnimation).FromResolve();
             Container.BindSignal<SignalButtonHeld>()
                 .ToMethod<IGameController>(x => x.OnGameButtonHeld).FromResolve();
             Container.BindSignal<SignalGameOver>()
@@ -82,6 +83,7 @@ namespace Installers
             Container.Bind<Camera>().FromInstance(mainCamera).AsSingle().NonLazy();
             Container.Bind<PlayerBall>().FromInstance(playerBall).AsSingle().NonLazy();
             Container.Bind<FlyingObject>().FromInstance(flyingObject).AsSingle().NonLazy();
+            Container.Bind<RoadLine>().FromInstance(roadLine).AsSingle().NonLazy();
             Container.Bind<GameObject>().FromInstance(door).AsSingle().NonLazy();
             Container.Bind<Image>().FromInstance(flashImage).AsSingle().NonLazy();
         }

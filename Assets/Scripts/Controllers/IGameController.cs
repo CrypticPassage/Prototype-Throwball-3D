@@ -6,7 +6,7 @@ namespace Controllers
     {
         void OnGameStart();
         void OnObjectsCollision(SignalObjectsCollision signal);
-        void OnStartAnimation(SignalStartAnimation startAnimationSignal);
+        void OnStartTryAnimation(SignalStartTryAnimation startTryAnimationSignal);
         void OnGameButtonHeld(SignalButtonHeld buttonHeldSignal);
     }
 }

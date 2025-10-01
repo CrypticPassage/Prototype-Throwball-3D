@@ -7,6 +7,6 @@ namespace Services
     {
         void KillSequence();
         void StartGameAnimation(Camera camera, GameSettingVo gameSettingVo);
-        void StartEndGameAnimation();
+        void StartTryGameAnimation();
     }
 }

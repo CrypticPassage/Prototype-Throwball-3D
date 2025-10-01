@@ -15,6 +15,13 @@ namespace Models
         public int ThrowableBallMaxDistance;
         public int ThrowableBallSpeed;
         public int ThrowableBallZOffset;
+        public int DistanceToDoor;
+        public int BallRollEndPositionZ;
+        public float DoorAnimationDuration;
+        public float BallRollAnimationDuration;
+        public float FlyingObjectStartPositionY;
+        public float FlyingObjectEndPositionY;
+        public float FlyingObjectAnimationDuration;
         public float PlayerBallScaleLimit;
         public float PlayerBallScaleCoef;
         public float ThrowableBallScaleCoef;

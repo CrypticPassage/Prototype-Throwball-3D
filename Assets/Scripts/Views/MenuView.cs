@@ -6,41 +6,52 @@ using UnityEngine.UI;
 namespace Views
 {
     public class MenuView : MonoBehaviour
-    {
-        [Header("MainMenuState")]
-        [SerializeField] private Button _playButton;
-        [SerializeField] private Button _exitButton;
+    { 
+        [Header("MainMenuState")] 
+        [SerializeField] private Button playButton; 
+        [SerializeField] private Button exitButton;
         [Header("GameState")] 
-        [SerializeField] private Button _tryButton;
-        [SerializeField] private TMP_Text _resultText;
+        [SerializeField] private Button tryButton;
+        [Header("ResultState")] 
+        [SerializeField] private Button playAgainButton;
+        [SerializeField] private TMP_Text resultText;
         [Header("States")] 
-        [SerializeField] private RectTransform _mainMenuStateTransform;
-        [SerializeField] private RectTransform _gameStateTransform;
-        [Header("Other")]
-        [SerializeField] private Image _backgroundImage;
+        [SerializeField] private RectTransform mainMenuStateTransform;
+        [SerializeField] private RectTransform gameStateTransform; 
+        [SerializeField] private RectTransform resultStateTransform;
+        [Header("Other")] 
+        [SerializeField] private Image backgroundImage;
         
-        public Button PlayButton => _playButton;
-        public Button ExitButton => _exitButton;
-        public Button TryButton => _tryButton;
+        public Button PlayButton => playButton;
+        public Button ExitButton => exitButton;
+        public Button TryButton => tryButton;
+        public Button PlayAgainButton => playAgainButton;
 
         public void SetState(EMenuState state)
         {
             switch (state)
             {
                 case EMenuState.Menu:
-                    _backgroundImage.enabled = true;
-                    _mainMenuStateTransform.gameObject.SetActive(true);
-                    _gameStateTransform.gameObject.SetActive(false);
+                    backgroundImage.enabled = true;
+                    mainMenuStateTransform.gameObject.SetActive(true);
+                    gameStateTransform.gameObject.SetActive(false);
+                    resultStateTransform.gameObject.SetActive(false);
                     break;
-              
                 case EMenuState.Game:
-                    _backgroundImage.enabled = false;
-                    _mainMenuStateTransform.gameObject.SetActive(false);
-                    _gameStateTransform.gameObject.SetActive(true);
+                    backgroundImage.enabled = false;
+                    mainMenuStateTransform.gameObject.SetActive(false);
+                    gameStateTransform.gameObject.SetActive(true);
+                    resultStateTransform.gameObject.SetActive(false);
+                    break;
+                case EMenuState.Result:
+                    backgroundImage.enabled = false;
+                    mainMenuStateTransform.gameObject.SetActive(false);
+                    gameStateTransform.gameObject.SetActive(false);
+                    resultStateTransform.gameObject.SetActive(true);
                     break;
             }
         }
         
-        public void SetResultText(bool isWin) => _resultText.text = isWin ? "You Win!" : "You Loose!";
+        public void SetResultText(bool isWin) => resultText.text = isWin ? "You Win!" : "You Loose!";
     }
 }

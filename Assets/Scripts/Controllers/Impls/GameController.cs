@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using Databases;
+using Enums;
+using Managers;
 using Models;
 using Objects;
 using Services;
-using Services.Impls;
 using Signals;
 using UnityEngine;
 using Zenject;
@@ -16,9 +17,11 @@ namespace Controllers.Impls
         private GameSettingVo _gameSettingVo;
 
         private PlayerBall _playerBall;
+        private RoadLine _roadLine;
         private GameObject _door;
         private Camera _mainCamera;
 
+        private AudioManager _audioManager;
         private IInputService _inputService;
         private IObstaclesService _obstaclesService;
         private IAnimationsService _animationsService;
@@ -36,8 +39,10 @@ namespace Controllers.Impls
         public void Construct(SignalBus signalBus,
             IGameSettingsDatabase gameSettingsDatabase,
             PlayerBall playerBall,
+            RoadLine roadLine,
             GameObject door,
             Camera mainCamera,
+            AudioManager audioManager,
             IInputService inputService,
             IObstaclesService obstaclesService,
             IAnimationsService animationsService)
@@ -46,7 +51,9 @@ namespace Controllers.Impls
             _gameSettingVo = gameSettingsDatabase.GameSettingVo;
             _door = door;
             _playerBall = playerBall;
+            _roadLine = roadLine;
             _mainCamera = mainCamera;
+            _audioManager = audioManager;
             _inputService = inputService;
             _obstaclesService = obstaclesService;
             _animationsService = animationsService;
@@ -57,6 +64,7 @@ namespace Controllers.Impls
             _playerBall.Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
             _playerBall.gameObject.transform.localPosition = _gameSettingVo.PlayerPositionAtStart;
             _playerBall.gameObject.transform.localScale = _gameSettingVo.PlayerScaleAtStart;
+            _roadLine.transform.localScale = new Vector3(_playerBall.transform.localScale.x, _roadLine.transform.localScale.y, _roadLine.transform.localScale.z);
             _playerBall.ThrowableBall.gameObject.SetActive(true);
             _door.gameObject.transform.SetLocalPositionAndRotation(_gameSettingVo.DoorStartPosition,
                 Quaternion.Euler(_gameSettingVo.DoorStartRotation));
@@ -100,8 +108,8 @@ namespace Controllers.Impls
             }
         }
 
-        public void OnStartAnimation(SignalStartAnimation startAnimationSignal) 
-            => StartEndGameAnimation();
+        public void OnStartTryAnimation(SignalStartTryAnimation startTryAnimationSignal) 
+            => StartTryAnimation();
 
         public void OnGameButtonHeld(SignalButtonHeld buttonHeldSignal) 
             => _isGameOn = !buttonHeldSignal.IsHeld;
@@ -116,13 +124,13 @@ namespace Controllers.Impls
             CheckThrownBall();
         }
 
-        private void StartEndGameAnimation()
+        private void StartTryAnimation()
         {
             _isGameOn = false;
             _playerBall.ThrowableBall.IsBallThrown = false;
             _playerBall.Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
             _playerBall.ThrowableBall.gameObject.SetActive(false);
-            _animationsService.StartEndGameAnimation();
+            _animationsService.StartTryGameAnimation();
         }
 
         private void CheckPlayerBallSize()
@@ -180,6 +188,8 @@ namespace Controllers.Impls
                 _playerBallScale.y -= Time.deltaTime * _gameSettingVo.PlayerBallScaleCoef;
                 _playerBallScale.z -= Time.deltaTime * _gameSettingVo.PlayerBallScaleCoef;
                 _playerBall.gameObject.transform.localScale += _playerBallScale;
+                
+                _roadLine.transform.localScale = new Vector3(_playerBall.transform.localScale.x, _roadLine.transform.localScale.y, _roadLine.transform.localScale.z);
             }
 
             if (_playerBall.ThrowableBall.gameObject.transform.localScale != _gameSettingVo.MinThrowableBallScale)
@@ -189,13 +199,14 @@ namespace Controllers.Impls
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                     if (Physics.Raycast(ray, out RaycastHit hit))
                         _throwBallDirection = hit.point;
-
+                    
+                    _audioManager.PlayMusicByType(EAudioType.BallThrow, false);
                     _isKeyPressed = false;
                     _playerBall.ThrowableBall.IsBallThrown = true;
                 }
             }
         }
-
+        
         private void OnGameOver()
         {
             _animationsService.KillSequence();

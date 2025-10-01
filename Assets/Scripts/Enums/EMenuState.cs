@@ -3,6 +3,7 @@
     public enum EMenuState
     {
         Menu,
-        Game
+        Game,
+        Result
     }
 }

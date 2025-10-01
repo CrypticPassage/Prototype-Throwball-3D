@@ -27,27 +27,36 @@ namespace Controllers.Impls
         {
             _menuView = menuView;
         }
-        
-        public void OnGameOver(SignalGameOver gameOverSignal) 
-            => _menuView.SetResultText(gameOverSignal.IsWin);
-        
+
+        public void OnGameOver(SignalGameOver gameOverSignal)
+        {
+            _menuView.SetResultText(gameOverSignal.IsWin);
+            _menuView.SetState(EMenuState.Result);
+        }
+
         private void Start()
         {
             _menuView.PlayButton.onClick.AddListener(OnStartButtonClick);
             _menuView.ExitButton.onClick.AddListener(OnExitButtonClick);
             _menuView.TryButton.onClick.AddListener(OnTryButtonClick);
+            _menuView.PlayAgainButton.onClick.AddListener(OnPlayAgainButtonClick);
             
             _menuView.gameObject.SetActive(true);
             _menuView.SetState(EMenuState.Menu);
         }
 
-        private void OnStartButtonClick()
+        private void OnStartButtonClick() => StartGame();
+
+        private void OnExitButtonClick() => Application.Quit();
+        
+        private void OnTryButtonClick() => _signalBus.Fire<SignalStartTryAnimation>();
+
+        private void OnPlayAgainButtonClick() => StartGame();
+
+        private void StartGame()
         {
             _menuView.SetState(EMenuState.Game);
             _signalBus.Fire<SignalStartGame>();
         }
-
-        private void OnExitButtonClick() => Application.Quit();
-        private void OnTryButtonClick() => _signalBus.Fire<SignalStartAnimation>();
     }
 }

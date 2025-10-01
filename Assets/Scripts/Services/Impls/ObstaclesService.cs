@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Databases;
+using Enums;
 using Factories;
+using Managers;
 using Models;
 using Objects;
 using Pools;
@@ -15,14 +17,17 @@ namespace Services.Impls
     {
         private PoolBase<Obstacle> _obstaclesPool;
         private ObstacleFactory _obstacleFactory;
+        private AudioManager _audioManager;
         private GameSettingVo _gameSettingVo;
         
         [Inject]
         public void Construct(IGameSettingsDatabase gameSettingsDatabase,
+            AudioManager audioManager,
             ObstacleFactory obstacleFactory)
         {
             _gameSettingVo = gameSettingsDatabase.GameSettingVo;
             _obstacleFactory = obstacleFactory;
+            _audioManager = audioManager;
             _obstaclesPool = new PoolBase<Obstacle>(
                 PreloadObstacle, GetActionObstacle, ReturnActionObstacle, _gameSettingVo.ObstaclesAmount);
         }
@@ -45,10 +50,13 @@ namespace Services.Impls
             }
         }
 
-        public void StartDestroyingObstacles(List<Obstacle> obstacles) 
-            => StartCoroutine(DestroyObstaclesWithDelay(obstacles));
+        public void StartDestroyingObstacles(List<Obstacle> obstacles)
+        { 
+            _audioManager.PlayMusicByType(EAudioType.BallHit, false);
+            StartCoroutine(DestroyObstaclesWithDelay(obstacles));
+        }
 
-            private IEnumerator DestroyObstaclesWithDelay(List<Obstacle> obstacles)
+        private IEnumerator DestroyObstaclesWithDelay(List<Obstacle> obstacles)
         {
             foreach (var obstacle in obstacles)
             {

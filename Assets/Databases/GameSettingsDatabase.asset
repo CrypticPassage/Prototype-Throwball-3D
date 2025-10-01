@@ -22,6 +22,13 @@ MonoBehaviour:
     ThrowableBallMaxDistance: 30
     ThrowableBallSpeed: 10
     ThrowableBallZOffset: 5
+    DistanceToDoor: 25
+    BallRollEndPositionZ: 28
+    DoorAnimationDuration: 3
+    BallRollAnimationDuration: 5
+    FlyingObjectStartPositionY: 6
+    FlyingObjectEndPositionY: 8
+    FlyingObjectAnimationDuration: 4
     PlayerBallScaleLimit: 2
     PlayerBallScaleCoef: 0.0001
     ThrowableBallScaleCoef: 0.5
