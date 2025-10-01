@@ -94,11 +94,16 @@ namespace Controllers.Impls
 
                 var obstaclesToDestroy = new List<Obstacle>();
 
+                var hittedObstacle = signal.Collision.gameObject.GetComponentInParent<Obstacle>();
+                
+                if (hittedObstacle) 
+                    obstaclesToDestroy.Add(hittedObstacle);
+
                 foreach (var hitCollider in hitColliders)
                 {
                     var obstacle = hitCollider.gameObject.GetComponentInParent<Obstacle>();
-                    
-                    if (obstacle)
+
+                    if (obstacle && obstacle != hittedObstacle)
                         obstaclesToDestroy.Add(obstacle);
                 }
                 
