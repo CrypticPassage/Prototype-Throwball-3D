@@ -31,7 +31,7 @@ MonoBehaviour:
     FlyingObjectAnimationDuration: 4
     PlayerBallScaleLimit: 2
     PlayerBallScaleCoef: 0.0001
-    ThrowableBallScaleCoef: 0.5
+    ThrowableBallScaleCoef: 0.15
     ObstacleColorChangeTime: 0.4
     ObstaclesDestroyingDelay: 0.2
     PlayerPositionAtStart: {x: 0, y: 2.5, z: -17}

@@ -65,6 +65,8 @@ namespace Controllers.Impls
             _playerBall.gameObject.transform.localScale = _gameSettingVo.PlayerScaleAtStart;
             _roadLine.transform.localScale = new Vector3(_playerBall.transform.localScale.x, _roadLine.transform.localScale.y, _roadLine.transform.localScale.z);
             _playerBall.ThrowableBall.gameObject.SetActive(true);
+            _throwBallScale = _gameSettingVo.MinThrowableBallScale;
+            _playerBall.ThrowableBall.gameObject.transform.localScale = _throwBallScale;
             _door.gameObject.transform.SetLocalPositionAndRotation(_gameSettingVo.DoorStartPosition,
                 Quaternion.Euler(_gameSettingVo.DoorStartRotation));
             _animationsService.StartEntryGameAnimation(_mainCamera, _gameSettingVo);
@@ -182,14 +184,14 @@ namespace Controllers.Impls
             {
                 _isKeyPressed = true;
 
-                _throwBallScale.x += Time.deltaTime * _gameSettingVo.ThrowableBallScaleCoef;
-                _throwBallScale.y += Time.deltaTime * _gameSettingVo.ThrowableBallScaleCoef;
-                _throwBallScale.z += Time.deltaTime * _gameSettingVo.ThrowableBallScaleCoef;
+                _throwBallScale.x += Time.fixedDeltaTime * _gameSettingVo.ThrowableBallScaleCoef;
+                _throwBallScale.y += Time.fixedDeltaTime * _gameSettingVo.ThrowableBallScaleCoef;
+                _throwBallScale.z += Time.fixedDeltaTime * _gameSettingVo.ThrowableBallScaleCoef;
                 _playerBall.ThrowableBall.gameObject.transform.localScale = _throwBallScale;
 
-                _playerBallScale.x -= Time.deltaTime * _gameSettingVo.PlayerBallScaleCoef;
-                _playerBallScale.y -= Time.deltaTime * _gameSettingVo.PlayerBallScaleCoef;
-                _playerBallScale.z -= Time.deltaTime * _gameSettingVo.PlayerBallScaleCoef;
+                _playerBallScale.x -= Time.fixedDeltaTime * _gameSettingVo.PlayerBallScaleCoef;
+                _playerBallScale.y -= Time.fixedDeltaTime * _gameSettingVo.PlayerBallScaleCoef;
+                _playerBallScale.z -= Time.fixedDeltaTime * _gameSettingVo.PlayerBallScaleCoef;
                 _playerBall.gameObject.transform.localScale += _playerBallScale;
                 
                 _roadLine.transform.localScale = new Vector3(_playerBall.transform.localScale.x,
