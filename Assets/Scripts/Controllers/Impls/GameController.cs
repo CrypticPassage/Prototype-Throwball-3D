@@ -1,4 +1,5 @@
-﻿using Databases;
+﻿using System.Collections.Generic;
+using Databases;
 using Models;
 using Objects;
 using Services;
@@ -27,7 +28,6 @@ namespace Controllers.Impls
         private Vector3 _throwBallDirection;
 
         private bool _isGameOn;
-        private bool _isAnimationOn;
         private bool _isBallThrown;
         private bool _isKeyPressed;
 
@@ -53,58 +53,68 @@ namespace Controllers.Impls
         {
             _playerBall.gameObject.transform.localPosition = _gameSettingVo.PlayerPositionAtStart;
             _playerBall.gameObject.transform.localScale = _gameSettingVo.PlayerScaleAtStart;
-            //_door.gameObject.transform.SetLocalPositionAndRotation(_gameSettingVo.DoorStartPosition, Quaternion.Euler(_gameSettingVo.DoorStartRotation));
-            // _mainCamera.gameObject.transform.SetPositionAndRotation(_gameSettingVo.CameraGamePosition, Quaternion.Euler(_gameSettingVo.CameraGameRotation));
-            // _obstaclesService.GetObstacles(100);
+            _door.gameObject.transform.SetLocalPositionAndRotation(_gameSettingVo.DoorStartPosition,
+                Quaternion.Euler(_gameSettingVo.DoorStartRotation));
             _animationsService.StartGameAnimation(_mainCamera, _gameSettingVo);
+            _obstaclesService.DespawnAllObstacles();
+            _obstaclesService.GetObstacles(_gameSettingVo.ObstaclesAmount);
 
             _isKeyPressed = false;
             _isGameOn = true;
         }
 
-        public void OnGameOver(SignalGameOver gameOverSignal)
+        public void OnObjectsCollision(SignalObjectsCollision signal)
         {
-            _animationsService.KillSequence();
-            _isGameOn = false;
-            _isAnimationOn = false;
-        }
-
-        public void OnThrownBallCollision(SignalThrowBallCollision throwBallCollisionSignal)
-        {
-            _isBallThrown = false;
-            _obstaclesService.GetDestroyedObstacles(throwBallCollisionSignal.ObstaclesPositions);
-        }
-
-        public void OnStartAnimation(SignalStartAnimation startAnimationSignal)
-        {
-            if (!_isAnimationOn)
+            if (signal.ObjectThatEnteredCollision == _playerBall.gameObject &&
+                signal.Collision.gameObject.GetComponentInParent<Obstacle>())
             {
-                _isAnimationOn = true;
-                StartAnimation();
+                OnGameOver();
+                _signalBus.Fire(new SignalGameOver(false));
+
+                return;
+            }
+
+            if (signal.ObjectThatEnteredCollision == _playerBall.ThrowableBall.gameObject &&
+                signal.Collision.gameObject.GetComponentInParent<Obstacle>())
+            {
+                var hitColliders = Physics.OverlapSphere(signal.Collision.gameObject.transform.position,
+                    signal.ObjectThatEnteredCollision.transform.localScale.x * _gameSettingVo.ObstaclesRadiusCoef);
+
+                var obstaclesToDestroy = new List<Obstacle>();
+
+                foreach (var hitCollider in hitColliders)
+                {
+                    var obstacle = hitCollider.gameObject.GetComponentInParent<Obstacle>();
+                    
+                    if (obstacle)
+                        obstaclesToDestroy.Add(obstacle);
+                }
+                
+                _obstaclesService.StartDestroyingObstacles(obstaclesToDestroy);
+                _isBallThrown = false;
             }
         }
 
-        public void OnGameButtonHeld(SignalButtonHeld buttonHeldSignal)
-        {
-            if (!_isAnimationOn)
-                _isGameOn = !buttonHeldSignal.IsHeld;
-        }
+        public void OnStartAnimation(SignalStartAnimation startAnimationSignal) 
+            => StartEndGameAnimation();
+
+        public void OnGameButtonHeld(SignalButtonHeld buttonHeldSignal) 
+            => _isGameOn = !buttonHeldSignal.IsHeld;
 
         private void Update()
         {
-            if (_isGameOn)
-            {
-                CheckInput();
-                CheckPlayerBallSize();
-                CheckThrownBall();
-            }
+            if (!_isGameOn)
+                return;
+                
+            CheckInput(); 
+            CheckPlayerBallSize(); 
+            CheckThrownBall();
         }
 
-        private void StartAnimation()
+        private void StartEndGameAnimation()
         {
             _isGameOn = false;
             _isBallThrown = false;
-            _isAnimationOn = true;
             _animationsService.StartEndGameAnimation();
         }
 
@@ -112,7 +122,7 @@ namespace Controllers.Impls
         {
             if (_playerBall.gameObject.transform.localScale.x <= _gameSettingVo.PlayerBallScaleLimit)
             {
-                _isGameOn = false;
+                OnGameOver();
                 _signalBus.Fire(new SignalGameOver(false));
             }
         }
@@ -121,25 +131,25 @@ namespace Controllers.Impls
         {
             if (_isBallThrown)
             {
-                if (Vector3.Distance(_playerBallPosition, _throwBallPosition) > 20)
+                if (Vector3.Distance(_playerBallPosition, _throwBallPosition) > _gameSettingVo.ThrowableBallMaxDistance)
                 {
                     _isBallThrown = false;
                     return;
                 }
 
                 _throwBallDirection.y = _playerBall.gameObject.transform.position.y;
-                _throwBallPosition += _throwBallDirection.normalized * (15 * Time.deltaTime);
+                _throwBallPosition += _throwBallDirection.normalized * (_gameSettingVo.ThrowableBallSpeed * Time.deltaTime);
                 _playerBall.ThrowableBall.gameObject.transform.position = _throwBallPosition;
             }
             else
             {
                 _throwBallPosition = _playerBallPosition;
-                _throwBallPosition.z -= 5;
+                _throwBallPosition.z -= _gameSettingVo.ThrowableBallZOffset;
                 _playerBall.ThrowableBall.gameObject.transform.position = _throwBallPosition;
 
                 if (!_isKeyPressed)
                 {
-                    _throwBallScale = new Vector3(0, 0, 0);
+                    _throwBallScale = _gameSettingVo.MinThrowableBallScale;
                     _playerBall.ThrowableBall.gameObject.transform.localScale = _throwBallScale;
                 }
             }
@@ -154,18 +164,18 @@ namespace Controllers.Impls
             {
                 _isKeyPressed = true;
 
-                _throwBallScale.x += Time.deltaTime;
-                _throwBallScale.y += Time.deltaTime;
-                _throwBallScale.z += Time.deltaTime;
+                _throwBallScale.x += Time.deltaTime * _gameSettingVo.ThrowableBallScaleCoef;
+                _throwBallScale.y += Time.deltaTime * _gameSettingVo.ThrowableBallScaleCoef;
+                _throwBallScale.z += Time.deltaTime * _gameSettingVo.ThrowableBallScaleCoef;
                 _playerBall.ThrowableBall.gameObject.transform.localScale = _throwBallScale;
 
-                _playerBallScale.x -= Time.deltaTime * 0.002f;
-                _playerBallScale.y -= Time.deltaTime * 0.002f;
-                _playerBallScale.z -= Time.deltaTime * 0.002f;
+                _playerBallScale.x -= Time.deltaTime * _gameSettingVo.PlayerBallScaleCoef;
+                _playerBallScale.y -= Time.deltaTime * _gameSettingVo.PlayerBallScaleCoef;
+                _playerBallScale.z -= Time.deltaTime * _gameSettingVo.PlayerBallScaleCoef;
                 _playerBall.gameObject.transform.localScale += _playerBallScale;
             }
 
-            if (_playerBall.ThrowableBall.gameObject.transform.localScale != new Vector3(0, 0, 0))
+            if (_playerBall.ThrowableBall.gameObject.transform.localScale != _gameSettingVo.MinThrowableBallScale)
             {
                 if (Input.GetKeyUp(KeyCode.Mouse0))
                 {
@@ -177,6 +187,12 @@ namespace Controllers.Impls
                     _isBallThrown = true;
                 }
             }
+        }
+
+        private void OnGameOver()
+        {
+            _animationsService.KillSequence();
+            _isGameOn = false;
         }
     }
 }

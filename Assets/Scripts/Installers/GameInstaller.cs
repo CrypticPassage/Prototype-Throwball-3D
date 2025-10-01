@@ -20,7 +20,6 @@ namespace Installers
         [SerializeField] private Camera mainCamera;
         [SerializeField] private PlayerBall playerBall;
         [SerializeField] private Obstacle obstacle;
-        [SerializeField] private DestroyedObstacle destroyedObstacle;
         [SerializeField] private GameObject door;
         [Header("Other")]
         [SerializeField] private Image flashImage;
@@ -43,7 +42,7 @@ namespace Installers
         {
             Container.DeclareSignal<SignalStartGame>();
             Container.DeclareSignal<SignalGameOver>();
-            Container.DeclareSignal<SignalThrowBallCollision>();
+            Container.DeclareSignal<SignalObjectsCollision>();
             Container.DeclareSignal<SignalStartAnimation>();
             Container.DeclareSignal<SignalButtonHeld>();
         }
@@ -52,25 +51,20 @@ namespace Installers
         {
             Container.BindSignal<SignalStartGame>()
                 .ToMethod<IGameController>(x => x.OnGameStart).FromResolve();
-            Container.BindSignal<SignalGameOver>()
-                .ToMethod<IGameController>(x => x.OnGameOver).FromResolve();
-            Container.BindSignal<SignalGameOver>()
-                .ToMethod<IMenuController>(x => x.OnGameOver).FromResolve();
-            Container.BindSignal<SignalThrowBallCollision>()
-                .ToMethod<IGameController>(x => x.OnThrownBallCollision).FromResolve();
+            Container.BindSignal<SignalObjectsCollision>()
+                .ToMethod<IGameController>(x => x.OnObjectsCollision).FromResolve();
             Container.BindSignal<SignalStartAnimation>()
                 .ToMethod<IGameController>(x => x.OnStartAnimation).FromResolve();
             Container.BindSignal<SignalButtonHeld>()
                 .ToMethod<IGameController>(x => x.OnGameButtonHeld).FromResolve();
+            Container.BindSignal<SignalGameOver>()
+                .ToMethod<IMenuController>(x => x.OnGameOver).FromResolve();
         }
 
         private void BindFactories()
         {
             Container.BindFactory<Obstacle, ObstacleFactory>()
                 .FromComponentInNewPrefab(obstacle)
-                .AsTransient();
-            Container.BindFactory<DestroyedObstacle, DestroyedObstacleFactory>()
-                .FromComponentInNewPrefab(destroyedObstacle)
                 .AsTransient();
         }
 

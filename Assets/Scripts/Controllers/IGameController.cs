@@ -5,8 +5,7 @@ namespace Controllers
     public interface IGameController
     {
         void OnGameStart();
-        void OnGameOver(SignalGameOver gameOverSignal);
-        void OnThrownBallCollision(SignalThrowBallCollision throwBallCollisionSignal);
+        void OnObjectsCollision(SignalObjectsCollision signal);
         void OnStartAnimation(SignalStartAnimation startAnimationSignal);
         void OnGameButtonHeld(SignalButtonHeld buttonHeldSignal);
     }

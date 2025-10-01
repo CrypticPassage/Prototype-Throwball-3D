@@ -6,8 +6,8 @@ namespace Services
 {
     public interface IObstaclesService
     {
+        void DespawnAllObstacles();
         void GetObstacles(int amount);
-        void GetDestroyedObstacles(List<Vector3> positions);
-        void ReturnActionObstacle(Obstacle obstacle);
+        void StartDestroyingObstacles(List<Obstacle> obstacles);
     }
 }

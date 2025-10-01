@@ -433,7 +433,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 2.5, z: -14}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 114394637}
@@ -857,12 +857,12 @@ Rigidbody:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
+  m_ImplicitCom: 0
+  m_ImplicitTensor: 0
+  m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 126
+  m_Constraints: 122
   m_CollisionDetection: 0
 --- !u!114 &713833891
 MonoBehaviour:
@@ -876,6 +876,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f113c45c314a456aaf24f128ffad80aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rigidbody: {fileID: 713833890}
   throwableBall: {fileID: 466899805}
 --- !u!135 &713833892
 SphereCollider:
@@ -1861,7 +1862,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -2500,7 +2501,6 @@ MonoBehaviour:
   mainCamera: {fileID: 963194227}
   playerBall: {fileID: 713833891}
   obstacle: {fileID: 1528905889553889988, guid: 7b7f81d854695aa4fb3bc00068b5d388, type: 3}
-  destroyedObstacle: {fileID: 1229232892824276837, guid: f29496858bf04af45ac84509869b74cb, type: 3}
   door: {fileID: 467340836}
   flashImage: {fileID: 1861319685}
   scriptsTransform: {fileID: 1970730498}

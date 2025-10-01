@@ -14,68 +14,64 @@ namespace Services.Impls
     public class ObstaclesService : MonoBehaviour, IObstaclesService
     {
         private PoolBase<Obstacle> _obstaclesPool;
-        private PoolBase<DestroyedObstacle> _destroyedObstaclesPool;
         private ObstacleFactory _obstacleFactory;
-        private DestroyedObstacleFactory _destroyedObstacleFactory;
         private GameSettingVo _gameSettingVo;
         
         [Inject]
         public void Construct(IGameSettingsDatabase gameSettingsDatabase,
-            ObstacleFactory obstacleFactory,
-            DestroyedObstacleFactory destroyedObstacleFactory)
+            ObstacleFactory obstacleFactory)
         {
             _gameSettingVo = gameSettingsDatabase.GameSettingVo;
             _obstacleFactory = obstacleFactory;
-            _destroyedObstacleFactory = destroyedObstacleFactory;
             _obstaclesPool = new PoolBase<Obstacle>(
-                PreloadObstacle, GetActionObstacle, ReturnActionObstacle, 100);
-            _destroyedObstaclesPool = new PoolBase<DestroyedObstacle>(
-                PreloadDestroyedObstacle, GetActionDestroyedObstacle, ReturnActionDestroyedObstacle, 25);
+                PreloadObstacle, GetActionObstacle, ReturnActionObstacle, _gameSettingVo.ObstaclesAmount);
         }
-        
-        public void GetObstacles(int amount)
+
+        public void DespawnAllObstacles()
         {
             _obstaclesPool.ReturnAll();
-            
+        }
+
+        public void GetObstacles(int amount)
+        {
             for (int i = 0; i < amount; i++)
             {
                 var obstacle = _obstaclesPool.Get();
 
                 var position = obstacle.gameObject.transform.position;
-                position.x = Random.Range(-10, 10);
-                position.z = Random.Range(-10, 10);
+                position.x = Random.Range(_gameSettingVo.ObstaclesMinXPosition, _gameSettingVo.ObstaclesMaxXPosition);
+                position.z = Random.Range(_gameSettingVo.ObstaclesMinZPosition, _gameSettingVo.ObstaclesMaxZPosition);
                 obstacle.gameObject.transform.position = position;
             }
         }
 
-        public void GetDestroyedObstacles(List<Vector3> positions)
+        public void StartDestroyingObstacles(List<Obstacle> obstacles) 
+            => StartCoroutine(DestroyObstaclesWithDelay(obstacles));
+
+            private IEnumerator DestroyObstaclesWithDelay(List<Obstacle> obstacles)
         {
-            foreach (var position in positions)
+            foreach (var obstacle in obstacles)
             {
-                var obstacle = _destroyedObstaclesPool.Get();
-                obstacle.gameObject.transform.position = position;
-                
                 StartCoroutine(ChangeColorAndReturn(obstacle));
+                
+                yield return new WaitForSeconds(_gameSettingVo.ObstaclesDestroyingDelay);
             }
         }
         
-        public Obstacle PreloadObstacle() => _obstacleFactory.Create();
-        
-        public void GetActionObstacle(Obstacle obstacle) => obstacle.gameObject.SetActive(true);
-
-        public void ReturnActionObstacle(Obstacle obstacle) => obstacle.gameObject.SetActive(false);
-
-        public DestroyedObstacle PreloadDestroyedObstacle() => _destroyedObstacleFactory.Create();
-        
-        public void GetActionDestroyedObstacle(DestroyedObstacle obstacle) => obstacle.gameObject.SetActive(true);
-
-        public void ReturnActionDestroyedObstacle(DestroyedObstacle obstacle) => obstacle.gameObject.SetActive(false);
-
-        private IEnumerator ChangeColorAndReturn(DestroyedObstacle obstacle)
+        private IEnumerator ChangeColorAndReturn(Obstacle obstacle)
         {
-            yield return new WaitForSeconds(0.4f);
+            obstacle.MeshRenderer.material = _gameSettingVo.DestroyingObstacleMaterial;
             
-            ReturnActionDestroyedObstacle(obstacle);
+            yield return new WaitForSeconds(_gameSettingVo.ObstacleColorChangeTime);
+            
+            ReturnActionObstacle(obstacle);
+            obstacle.MeshRenderer.material = _gameSettingVo.ActiveObstacleMaterial;
         }
+
+        private Obstacle PreloadObstacle() => _obstacleFactory.Create();
+        
+        private void GetActionObstacle(Obstacle obstacle) => obstacle.gameObject.SetActive(true);
+
+        private void ReturnActionObstacle(Obstacle obstacle) => obstacle.gameObject.SetActive(false);
     }
 }

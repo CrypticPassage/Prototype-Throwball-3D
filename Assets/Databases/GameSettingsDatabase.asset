@@ -13,11 +13,25 @@ MonoBehaviour:
   m_Name: GameSettingsDatabase
   m_EditorClassIdentifier: 
   _gameSettingVo:
-    PlayerBallScaleLimit: 0
-    BallsHeight: 2.5
+    ObstaclesAmount: 80
+    ObstaclesMinXPosition: -20
+    ObstaclesMaxXPosition: 10
+    ObstaclesMinZPosition: -2
+    ObstaclesMaxZPosition: 22
+    ObstaclesRadiusCoef: 2
+    ThrowableBallMaxDistance: 30
+    ThrowableBallSpeed: 10
+    ThrowableBallZOffset: 5
+    PlayerBallScaleLimit: 2
+    PlayerBallScaleCoef: 0.0001
+    ThrowableBallScaleCoef: 0.5
+    ObstacleColorChangeTime: 0.3
+    ObstaclesDestroyingDelay: 0.1
     PlayerPositionAtStart: {x: 0, y: 2.5, z: -17}
     PlayerScaleAtStart: {x: 4, y: 4, z: 4}
-    DoorStartPosition: {x: 0, y: 1.5, z: 18.8}
+    DoorStartPosition: {x: 1.5, y: 1.5, z: 18.8}
     DoorStartRotation: {x: 0, y: 90, z: 0}
     CameraGamePosition: {x: 5, y: 14, z: -16}
     CameraGameRotation: {x: 35, y: -17, z: 0}
+    ActiveObstacleMaterial: {fileID: 2100000, guid: 94a23423ae408b9439eb7948dfd6298f, type: 2}
+    DestroyingObstacleMaterial: {fileID: 2100000, guid: 8cbe0e969869eb84598fa901a94a5341, type: 2}

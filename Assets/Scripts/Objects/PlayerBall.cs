@@ -6,10 +6,11 @@ namespace Objects
 {
     public class PlayerBall : MonoBehaviour
     {
+        [SerializeField] private Rigidbody rigidbody;
         [SerializeField] private ThrowableBall throwableBall;
         
         private SignalBus _signalBus;
-
+        public Rigidbody Rigidbody => rigidbody;
         public ThrowableBall ThrowableBall => throwableBall;
         
         [Inject] 
@@ -20,8 +21,7 @@ namespace Objects
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (collision.gameObject.tag == "Obstacle")
-                _signalBus.Fire(new SignalGameOver(false));
+            _signalBus.Fire(new SignalObjectsCollision(gameObject, collision));
         }
     }
 }
