@@ -61,7 +61,6 @@ namespace Controllers.Impls
 
         public void OnGameStart()
         {
-            _playerBall.Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
             _playerBall.gameObject.transform.localPosition = _gameSettingVo.PlayerPositionAtStart;
             _playerBall.gameObject.transform.localScale = _gameSettingVo.PlayerScaleAtStart;
             _roadLine.transform.localScale = new Vector3(_playerBall.transform.localScale.x, _roadLine.transform.localScale.y, _roadLine.transform.localScale.z);
@@ -128,7 +127,6 @@ namespace Controllers.Impls
         {
             _isGameOn = false;
             _playerBall.ThrowableBall.IsBallThrown = false;
-            _playerBall.Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
             _playerBall.ThrowableBall.gameObject.SetActive(false);
             _animationsService.StartTryGameAnimation();
         }
@@ -189,7 +187,8 @@ namespace Controllers.Impls
                 _playerBallScale.z -= Time.deltaTime * _gameSettingVo.PlayerBallScaleCoef;
                 _playerBall.gameObject.transform.localScale += _playerBallScale;
                 
-                _roadLine.transform.localScale = new Vector3(_playerBall.transform.localScale.x, _roadLine.transform.localScale.y, _roadLine.transform.localScale.z);
+                _roadLine.transform.localScale = new Vector3(_playerBall.transform.localScale.x,
+                    _roadLine.transform.localScale.y, _roadLine.transform.localScale.z);
             }
 
             if (_playerBall.ThrowableBall.gameObject.transform.localScale != _gameSettingVo.MinThrowableBallScale)
@@ -197,12 +196,18 @@ namespace Controllers.Impls
                 if (_inputService.IsClickUp())
                 {
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                    if (Physics.Raycast(ray, out RaycastHit hit))
-                        _throwBallDirection = hit.point;
+                    Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
+                    float distance;
                     
-                    _audioManager.PlayMusicByType(EAudioType.BallThrow, false);
-                    _isKeyPressed = false;
-                    _playerBall.ThrowableBall.IsBallThrown = true;
+                    if (groundPlane.Raycast(ray, out distance))
+                    {
+                        Vector3 targetPoint = ray.GetPoint(distance);
+                        
+                        _throwBallDirection = targetPoint - _playerBall.transform.position;
+                        _audioManager.PlayMusicByType(EAudioType.BallThrow, false);
+                        _isKeyPressed = false;
+                        _playerBall.ThrowableBall.IsBallThrown = true;
+                    }
                 }
             }
         }
