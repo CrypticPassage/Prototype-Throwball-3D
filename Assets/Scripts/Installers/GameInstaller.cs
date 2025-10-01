@@ -1,6 +1,7 @@
 using Controllers;
 using Controllers.Impls;
 using Factories;
+using Managers;
 using Objects;
 using Services;
 using Services.Impls;
@@ -22,6 +23,7 @@ namespace Installers
         [SerializeField] private FlyingObject flyingObject;
         [SerializeField] private Obstacle obstacle;
         [SerializeField] private GameObject door;
+        [SerializeField] private AudioManager audioManager;
         [Header("Other")]
         [SerializeField] private Image flashImage;
         [SerializeField] private Transform scriptsTransform;
@@ -37,6 +39,7 @@ namespace Installers
             BindControllers();
             BindServices();
             BindSignals();
+            BindManagers();
         }
 
         private void DeclareSignals()
@@ -94,6 +97,11 @@ namespace Installers
             Container.Bind<IInputService>().To<InputService>().FromNewComponentOn(scriptsTransform.gameObject).AsSingle().NonLazy();
             Container.Bind<IObstaclesService>().To<ObstaclesService>().FromNewComponentOn(scriptsTransform.gameObject).AsSingle().NonLazy();
             Container.Bind<IAnimationsService>().To<AnimationsService>().FromNewComponentOn(scriptsTransform.gameObject).AsSingle().NonLazy();
+        }
+
+        private void BindManagers()
+        {
+            Container.Bind<AudioManager>().FromInstance(audioManager).AsSingle().NonLazy();
         }
     }
 }
