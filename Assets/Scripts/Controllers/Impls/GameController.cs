@@ -209,15 +209,15 @@ namespace Controllers.Impls
             {
                 if (_inputService.IsClickUp())
                 {
-                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                    Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
-                    float distance;
-                    
-                    if (groundPlane.Raycast(ray, out distance))
+                    Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
+                    Plane groundPlane = new Plane(Vector3.up, _playerBall.ThrowableBall.gameObject.transform.position);
+
+                    if (groundPlane.Raycast(ray, out float distance))
                     {
                         Vector3 targetPoint = ray.GetPoint(distance);
+                        targetPoint.y = _playerBall.transform.position.y;
                         
-                        _throwBallDirection = targetPoint - _playerBall.transform.position;
+                        _throwBallDirection = targetPoint - _playerBall.ThrowableBall.transform.position;
                         _audioManager.PlayMusicByType(EAudioType.BallThrow, false);
                         _isKeyPressed = false;
                         _playerBall.ThrowableBall.IsBallThrown = true;
